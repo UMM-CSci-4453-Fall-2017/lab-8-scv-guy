@@ -9,7 +9,7 @@
 </head>
 <body ng-app="buttons">
 <div class="container-fluid">
-    <h1>Cash Register (with buttons)</h1>
+    <h1>Convenience Store Register (with buttons)</h1>
     <div id="buttons" ng-controller="buttonCtrl" >
        <div ng-repeat="button in buttons">
          <div style="position:absolute;left:{{button.left}}px;top:{{button.top}}px"><button id="{{button.buttonID}}" ng-click="buttonClick($event,'button.buttonID');" >{{button.label}}</button></div>

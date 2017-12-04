@@ -1,10 +1,10 @@
 var express=require('express'),
 mysql=require('mysql'),
+Promise = require('bluebird'),
+using = Promise.using,
 credentials=require('./credentials.json'),
 app = express(),
 port = process.env.PORT || 1337;
-
-credentials.host='ids.morris.umn.edu'; //setup database credentials
 
 var connection = mysql.createConnection(credentials); // setup the connection
 
@@ -12,7 +12,7 @@ connection.connect(function(err){if(err){console.log(error)}});
 
 app.use(express.static(__dirname + '/public'));
 app.get("/buttons",function(req,res){
-  var sql = 'SELECT * FROM test.till_buttons';
+  var sql = 'SELECT * FROM fluto006.till_buttons';
   connection.query(sql,(function(res){return function(err,rows,fields){
      if(err){console.log("We have an error:");
              console.log(err);}

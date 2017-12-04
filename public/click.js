@@ -31,7 +31,7 @@ function ButtonCtrl($scope,buttonApi){
   function buttonClick($event){
      $scope.errorMessage='';
      buttonApi.clickButton($event.target.id)
-        .success(function(){})
+        .success(function(){refreshButtons()})
         .error(function(){$scope.errorMessage="Unable click";});
   }
   refreshButtons();  //make sure the buttons are loaded
@@ -48,6 +48,30 @@ function buttonApi($http,apiUrl){
       var url = apiUrl+'/click?id='+id;
 //      console.log("Attempting with "+url);
       return $http.get(url); // Easy enough to do this way
+    },
+    getUser: function(){
+      var url = apiUrl + '/currentUser';
+      return $http.get(url);
+    },
+    changeUser: function(){ //need to add json credentials to log in as different user
+      var url = apiUrl + '/changeUser';
+      return $http.get(url);
+    },
+    makeTrans: function(){
+      var url = apiUrl + '/sale';
+      return $http.get(url);
+    },
+    voidTrans: function(){
+      var url = apiUrl + '/void';
+      return $http.get(url);
+    },
+    listTrans: function(){
+      var url = apiUrl + '/list';
+      return $http.get(url);
+    },
+    deleteItem: function(id){
+      var url = apiUrl + '/delete'; // might need to change -> make like clickButton
+      return $http.get(url);
     }
  };
 }
