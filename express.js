@@ -31,5 +31,35 @@ app.get("/click",function(req,res){
   }})(res));
 });
 // Your other API handlers go here!
+app.get("/sale",function(req,res){
+  var sql = 'CALL fluto006.completeTransaction';
+  connection.query(sql, (function(res){return function(err,rows,fields){
+    if(err){
+	console.log("Error: couldn't complete transaction");
+	console.log(err);
+    } 
+    res.send(rows);
+    }})(res));	
+});
+app.get("/void",function(req,res){
+  var sql = 'CALL fluto006.voidTransaction';
+  connection.query(sql, (function(res){return function(err,rows,fields){
+    if(err){
+	console.log("Error: couldn't void transaction");
+        console.log(err);
+    }
+    res.send(rows);
+  }})(res));
+});
+app.get("/list",function(req,res){
+  var sql = 'SELECT * FROM fluto006.current_transaction';
+  connection.query(sql, (function(res){return function(err,rows,fields){
+    if(err){
+      console.log("Error: couldn't list transaction");
+      console.log(err);
+    }
+    res.send(rows);
+  }})(res));
+});
 
 app.listen(port);

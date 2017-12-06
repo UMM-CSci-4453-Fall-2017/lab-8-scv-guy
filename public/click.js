@@ -5,67 +5,97 @@ angular.module('buttons',[])
 
 function ButtonCtrl($scope,buttonApi){
    $scope.buttons=[]; //Initially all was still
+   $scope.transactionItems=[]; 
    $scope.errorMessage='';
-   $scope.isLoading=isLoading;
    $scope.refreshButtons=refreshButtons;
    $scope.buttonClick=buttonClick;
-   $scope.listofPrices=[];
    $scope.deleteItem=deleteItem;
-   $scope.priceTotalScope=0;
-
-   var price = 0;
-   var totalPrice = 0;
-   var loading = false;
-
-   function isLoading(){
-    return loading;
-   }
+   $scope.listTransaction=listTransaction;
+   $scope.voidTransaction=voidTransaction;
+   $scope.completeTransaction=completeTransaction;
+   $scope.totalPrice=0;
+	
   function refreshButtons(){
-    loading=true;
     $scope.errorMessage='';
     buttonApi.getButtons()
       .success(function(data){
          $scope.buttons=data;
-         loading=false;
       })
       .error(function () {
-          $scope.errorMessage="Unable to load Buttons:  Database request failed";
-          loading=false;
+         $scope.errorMessage="Unable to load Buttons:  Database request failed";
       });
- }
+  }
   function buttonClick($event){
-     $scope.errorMessage='';
-     buttonApi.clickButton($event.target.id)
-<<<<<<< HEAD
-        .success(function(){refreshButtons()})
-=======
-        .success(function(){getTransaction()})
->>>>>>> c877d044e613e7767d73a8186161cd3058d3d10d
-        .error(function(){$scope.errorMessage="Unable click";});
-  }
-  function deleteItem($event){
-    console.log("id: " + $event.target.id);
     $scope.errorMessage='';
-    buttonApi.deleteItem($event.target.id).success(function(){
-      getTransaction()
-    }).error(function(){$scope.errorMessage="Not Advaible";});
-  }
-  function getTransaction(){
-    $scope.errorMessage='';
-    buttonApi.getTransaction().success(function(data){
-      .console.log("Caculating the total price");
-      for(var i = 0; i < data.length; i++){
-        totalPrice += data[i].priceTotalScopes
+    if($event.target.id == 11) {
+      completeTransaction();
+    } else if($event.target.id == 12) {
+      voidTransaction();
+    } else {
+      buttonApi.clickButton($event.target.id)
+        .success(function(){
+	  refreshButtons(); 
+          listTransaction();
+	})
+        .error(function(){
+	  $scope.errorMessage="Unable to add item -> id:" + $event.target.id;
+	});
       }
-      $scope.priceTotalScope = totalPrice;
-      $scope.priceList = data;
-      totalPrice = 0;
-      loading = false;
-    }).error(function(){$scope.errorMessage="Failed to load transactions";});
   }
-  getTransaction();
-  refreshButtons();  //make sure the buttons are loaded
-
+  function getUser(){} // Need to implement
+  function changeUser(){} // Need to implement
+  function deleteItem($event){
+    $scope.errorMessage='';
+    buttonApi.deleteItem($event.target.id)
+      .success(function(data){
+        refreshButtons(); 
+	listTransaction();
+      })
+      .error(function(){
+        $scope.errorMessage="Unable to load current transaction table";
+      });
+  }
+  // Creates a new stored table for the completed transaction with the current transaction list,
+  // drop all items from the current transaction table, reset the transaction list and total.
+  // Then, re-load the empty current transaction table.
+  function completeTransaction(){ 
+    $scope.errorMessage='';
+    buttonApi.completeTransaction()
+      .success(function(data){
+        $scope.totalPrice=0; 
+        $scope.transactionItems=[];
+        refreshButtons();
+        listTransaction();
+      })
+      .error(function(){
+        $scope.errorMessage="Failed to complete transaction";
+      });
+  }
+  function listTransaction(){ // Return a JSON of the current transaction table - includes item, quantity, price, total
+    $scope.errorMessage='';
+    buttonApi.listTransaction()
+      .success(function(data){
+        $scope.transactionItems=data;
+      })
+      .error(function(){
+        $scope.errorMessage="Failed to list transaction";
+      });
+  }
+  function voidTransaction(){
+    $scope.errorMessage='';
+    buttonApi.voidTransaction()
+      .success(function(data){
+        $scope.totalPrice=0;
+	$scope.transactionItems=[];
+	refreshButtons();
+	listTransaction();
+      })
+      .error(function(){
+        $scope.errorMessage="Failed to void transaction";
+      });
+  }
+  listTransaction();  //load the JSON of the current transaction table
+  refreshButtons();  //load the JSON of the till buttons
 }
 
 function buttonApi($http,apiUrl){
@@ -76,10 +106,8 @@ function buttonApi($http,apiUrl){
     },
     clickButton: function(id){
       var url = apiUrl+'/click?id='+id;
-//      console.log("Attempting with "+url);
       return $http.get(url); // Easy enough to do this way
     },
-<<<<<<< HEAD
     getUser: function(){
       var url = apiUrl + '/currentUser';
       return $http.get(url);
@@ -88,28 +116,20 @@ function buttonApi($http,apiUrl){
       var url = apiUrl + '/changeUser?id='+id;
       return $http.get(url);
     },
-    makeTrans: function(){
+    completeTransaction: function(){
       var url = apiUrl + '/sale';
       return $http.get(url);
     },
-    voidTrans: function(){
+    voidTransaction: function(){
       var url = apiUrl + '/void';
       return $http.get(url);
     },
-    listTrans: function(){
+    listTransaction: function(){
       var url = apiUrl + '/list';
       return $http.get(url);
     },
     deleteItem: function(id){
-      var url = apiUrl + '/delete'; // might need to change -> make like clickButton
-=======
-    deleteItem: function(id){
-      var url = apiUrl + '/deleteItem?id=' +id;
-      return $http.get(url);
-    },
-    getTransaction: function(){
-      var url = apiUrl + '/transactions';
->>>>>>> c877d044e613e7767d73a8186161cd3058d3d10d
+      var url = apiUrl + '/deleteItem?id='+id;
       return $http.get(url);
     }
  };
