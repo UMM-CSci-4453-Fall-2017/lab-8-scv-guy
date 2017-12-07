@@ -19,15 +19,17 @@ app.get("/buttons",function(req,res){
      res.send(rows);
   }})(res));
 });
-app.get("/click",function(req,res){
+app.post("/click",function(req,res){
   var id = req.param('id');
-  var sql = 'YOUR SQL HERE'
+  var sql = 'CALL fluto006.addItem('+id+')';
   console.log("Attempting sql ->"+sql+"<-");
 
   connection.query(sql,(function(res){return function(err,rows,fields){
-     if(err){console.log("We have an insertion error:");
-             console.log(err);}
-     res.send(err); // Let the upstream guy know how it went
+     if(err){console.log("Error: couldn't add item");
+             console.log(err);
+             res.send(err);
+           }
+    res.send("");
   }})(res));
 });
 // Your other API handlers go here!
@@ -37,9 +39,9 @@ app.get("/sale",function(req,res){
     if(err){
 	console.log("Error: couldn't complete transaction");
 	console.log(err);
-    } 
+    }
     res.send(rows);
-    }})(res));	
+    }})(res));
 });
 app.get("/void",function(req,res){
   var sql = 'CALL fluto006.voidTransaction';

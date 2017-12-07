@@ -5,7 +5,7 @@ angular.module('buttons',[])
 
 function ButtonCtrl($scope,buttonApi){
    $scope.buttons=[]; //Initially all was still
-   $scope.transactionItems=[]; 
+   $scope.transactionItems=[];
    $scope.errorMessage='';
    $scope.refreshButtons=refreshButtons;
    $scope.buttonClick=buttonClick;
@@ -14,7 +14,7 @@ function ButtonCtrl($scope,buttonApi){
    $scope.voidTransaction=voidTransaction;
    $scope.completeTransaction=completeTransaction;
    $scope.totalPrice=0;
-	
+
   function refreshButtons(){
     $scope.errorMessage='';
     buttonApi.getButtons()
@@ -26,6 +26,7 @@ function ButtonCtrl($scope,buttonApi){
       });
   }
   function buttonClick($event){
+    console.log("Button clicked" + $event.target.id);
     $scope.errorMessage='';
     if($event.target.id == 11) {
       completeTransaction();
@@ -33,9 +34,12 @@ function ButtonCtrl($scope,buttonApi){
       voidTransaction();
     } else {
       buttonApi.clickButton($event.target.id)
-        .success(function(){
-	  refreshButtons(); 
+        .success(function(data){
+          console.log(data);
+	        refreshButtons();
           listTransaction();
+          console.log("Button click successful");
+          console.log($scope.transactionItems);
 	})
         .error(function(){
 	  $scope.errorMessage="Unable to add item -> id:" + $event.target.id;
@@ -48,7 +52,7 @@ function ButtonCtrl($scope,buttonApi){
     $scope.errorMessage='';
     buttonApi.deleteItem($event.target.id)
       .success(function(data){
-        refreshButtons(); 
+        refreshButtons();
 	listTransaction();
       })
       .error(function(){
@@ -58,11 +62,11 @@ function ButtonCtrl($scope,buttonApi){
   // Creates a new stored table for the completed transaction with the current transaction list,
   // drop all items from the current transaction table, reset the transaction list and total.
   // Then, re-load the empty current transaction table.
-  function completeTransaction(){ 
+  function completeTransaction(){
     $scope.errorMessage='';
     buttonApi.completeTransaction()
       .success(function(data){
-        $scope.totalPrice=0; 
+        $scope.totalPrice=0;
         $scope.transactionItems=[];
         refreshButtons();
         listTransaction();
@@ -86,9 +90,9 @@ function ButtonCtrl($scope,buttonApi){
     buttonApi.voidTransaction()
       .success(function(data){
         $scope.totalPrice=0;
-	$scope.transactionItems=[];
-	refreshButtons();
-	listTransaction();
+	      $scope.transactionItems=[];
+	      refreshButtons();
+	      listTransaction();
       })
       .error(function(){
         $scope.errorMessage="Failed to void transaction";
@@ -106,7 +110,7 @@ function buttonApi($http,apiUrl){
     },
     clickButton: function(id){
       var url = apiUrl+'/click?id='+id;
-      return $http.get(url); // Easy enough to do this way
+      return $http.post(url); // Easy enough to do this way
     },
     getUser: function(){
       var url = apiUrl + '/currentUser';
