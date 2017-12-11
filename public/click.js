@@ -35,7 +35,7 @@ function ButtonCtrl($scope,buttonApi){
     } else {
       buttonApi.clickButton($event.target.id)
         .success(function(transactionItems){
-          console.log(data);
+          console.log(transactionItems);
 	        $scope.transactionItems = transactionItems;
 	        refreshButtons();
           listTransaction();
@@ -76,16 +76,25 @@ function ButtonCtrl($scope,buttonApi){
         $scope.errorMessage="Failed to complete transaction";
       });
   }
+
   function listTransaction(){ // Return a JSON of the current transaction table - includes item, quantity, price, total
     $scope.errorMessage='';
+    console.log("in listTransaction()");
     buttonApi.listTransaction()
       .success(function(data){
         $scope.transactionItems=data;
+        $scope.totalPrice=0;
+        data = data.map(function(item){
+          $scope.totalPrice += item.total;
+          return item;
+        })
+        $scope.totalPrice = parseFloat($scope.totalPrice).toFixed(2);
       })
       .error(function(){
         $scope.errorMessage="Failed to list transaction";
       });
   }
+
   function voidTransaction(){
     $scope.errorMessage='';
     buttonApi.voidTransaction()
