@@ -34,8 +34,9 @@ function ButtonCtrl($scope,buttonApi){
       voidTransaction();
     } else {
       buttonApi.clickButton($event.target.id)
-        .success(function(data){
+        .success(function(transactionItems){
           console.log(data);
+	        $scope.transactionItems = transactionItems;
 	        refreshButtons();
           listTransaction();
           console.log("Button click successful");
