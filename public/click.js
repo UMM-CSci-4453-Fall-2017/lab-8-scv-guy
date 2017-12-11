@@ -49,17 +49,6 @@ function ButtonCtrl($scope,buttonApi){
   }
   function getUser(){} // Need to implement
   function changeUser(){} // Need to implement
-  function deleteItem($event){
-    $scope.errorMessage='';
-    buttonApi.deleteItem($event.target.id)
-      .success(function(data){
-        refreshButtons();
-	listTransaction();
-      })
-      .error(function(){
-        $scope.errorMessage="Unable to load current transaction table";
-      });
-  }
   // Creates a new stored table for the completed transaction with the current transaction list,
   // drop all items from the current transaction table, reset the transaction list and total.
   // Then, re-load the empty current transaction table.
@@ -93,6 +82,14 @@ function ButtonCtrl($scope,buttonApi){
       .error(function(){
         $scope.errorMessage="Failed to list transaction";
       });
+  }
+
+  function deleteItem($event){
+    console.log("in buttonClick()");
+    $scope.errorMessage='';
+    buttonApi.clickButton($event.target.id)
+    .success(listTransaction)
+    .error(function(){$scope.errorMessage="Unable click";});
   }
 
   function voidTransaction(){
