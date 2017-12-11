@@ -27,6 +27,7 @@ function ButtonCtrl($scope,buttonApi){
   }
   function buttonClick($event){
     console.log("Button clicked" + $event.target.id);
+    console.log($event);
     $scope.errorMessage='';
     if($event.target.id == 11) {
       completeTransaction();
@@ -85,10 +86,13 @@ function ButtonCtrl($scope,buttonApi){
   }
 
   function deleteItem($event){
-    console.log("in buttonClick()");
+    console.log("in deleteItem()");
+    console.log($event.target.id);
     $scope.errorMessage='';
-    buttonApi.clickButton($event.target.id)
-    .success(listTransaction)
+    buttonApi.deleteItem($event.target.id)
+    .success(function(data){
+    listTransaction();
+  })
     .error(function(){$scope.errorMessage="Unable click";});
   }
 
@@ -115,7 +119,7 @@ function buttonApi($http,apiUrl){
       var url = apiUrl + '/buttons';
       return $http.get(url);
     },
-    clickButton: function(id){
+    clickButton: function(id){id
       var url = apiUrl+'/click?id='+id;
       return $http.post(url); // Easy enough to do this way
     },

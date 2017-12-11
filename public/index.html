@@ -29,8 +29,8 @@
            <th>Total</th>
          </thead>
          <tbody>
-           <tr ng-repeat="item in transactionItems" ng-click="deleteItem($event, 'button.buttonID');">
-             <td>{{item.item}}</td>
+           <tr ng-repeat="item in transactionItems" ng-click="deleteItem($event, 'item.item');">
+             <td id="{{item.item}}">{{item.item}}</td>
              <td>{{item.quantity}}</td>
              <td>{{item.total}}</td>
            </tr>
